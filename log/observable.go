@@ -115,7 +115,10 @@ func (l *observableLogger) Log(ctx context.Context, level Level, args []any) {
 		return
 	}
 	nowTime := time.Now()
-	if level <= l.level {
+	// Only write to the regular writer when no platform writer is present.
+	// When a platform writer exists it owns the log output (e.g. GUI), so
+	// writing to both would produce duplicate lines.
+	if level <= l.level && l.platformWriter == nil {
 		if l.needObservable {
 			message, messageSimple := l.formatter.FormatWithSimple(ctx, level, l.tag, F.ToString(args...), nowTime)
 			if level == LevelPanic {
@@ -136,6 +139,9 @@ func (l *observableLogger) Log(ctx context.Context, level Level, args []any) {
 				os.Exit(1)
 			}
 		}
+	} else if level <= l.level && l.needObservable {
+		_, messageSimple := l.formatter.FormatWithSimple(ctx, level, l.tag, F.ToString(args...), nowTime)
+		l.subscriber.Emit(Entry{level, messageSimple})
 	}
 	if l.platformWriter != nil {
 		l.platformWriter.WriteMessage(level, l.platformFormatter.Format(ctx, level, l.tag, F.ToString(args...), nowTime))
