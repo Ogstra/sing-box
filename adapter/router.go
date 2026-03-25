@@ -27,6 +27,8 @@ type Router interface {
 	Rules() []Rule
 	NeedFindProcess() bool
 	AppendTracker(tracker ConnectionTracker)
+	V2RayServer() V2RayServer
+	SetV2RayServer(server V2RayServer)
 	ResetNetwork()
 }
 

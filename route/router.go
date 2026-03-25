@@ -36,6 +36,7 @@ type Router struct {
 	processSearcher   process.Searcher
 	pauseManager      pause.Manager
 	trackers          []adapter.ConnectionTracker
+	v2rayServer       adapter.V2RayServer
 	platformInterface adapter.PlatformInterface
 	started           bool
 }
@@ -200,6 +201,14 @@ func (r *Router) Rules() []adapter.Rule {
 
 func (r *Router) AppendTracker(tracker adapter.ConnectionTracker) {
 	r.trackers = append(r.trackers, tracker)
+}
+
+func (r *Router) V2RayServer() adapter.V2RayServer {
+	return r.v2rayServer
+}
+
+func (r *Router) SetV2RayServer(server adapter.V2RayServer) {
+	r.v2rayServer = server
 }
 
 func (r *Router) NeedFindProcess() bool {
