@@ -15,6 +15,8 @@ func CreateProxyHttpClient(boxInstance *box.Box) *http.Client {
 		ResponseHeaderTimeout: time.Second * 3,
 	}
 
+	transport.DialContext = (&net.Dialer{Timeout: 3 * time.Second}).DialContext
+
 	if boxInstance != nil {
 		transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
 			return DialContext(ctx, boxInstance, network, addr)
